@@ -94,39 +94,44 @@ class RmfyCourtSpider(scrapy.Spider):
                 )
 
     def get_page_counts(self, response):
+        """
+        理论上该函数翻页解析可以结合到一起，目的是避免重复请求第一页，等有时间修改下
+        :param response:
+        :return:
+        """
         form_data = response.meta.get('form_data')
         item = response.meta.get('item')
         results = json.loads(response.text)
         page_count = jsonpath.jsonpath(results, expr='$..iTotalRecords')
         if page_count:
             counts = int(int(page_count[0]) / 15) + 2
+            # 翻页
+            for page in range(1, counts):
+                handle_list = [
+                    {"name": "sEcho", "value": page},
+                    {"name": "iColumns", "value": 6},
+                    {"name": "sColumns", "value": ",,,,,"},
+                    {"name": "iDisplayStart", "value": 15 * (page - 1)},
+                    {"name": "iDisplayLength", "value": 15},
+                    {"name": "mDataProp_0", "value": "null"},
+                    {"name": "mDataProp_1", "value": "null"},
+                    {"name": "mDataProp_2", "value": "null"},
+                    {"name": "mDataProp_3", "value": "null"},
+                    {"name": "mDataProp_4", "value": "null"},
+                    {"name": "mDataProp_5", "value": "null"}
+                ]
+                form_data['_noticelist_WAR_rmfynoticeListportlet_aoData'] = str(handle_list)
+                yield scrapy.FormRequest(
+                    url=self.list_url,
+                    formdata=form_data,
+                    callback=self.parse_index,
+                    dont_filter=True,  # 不过滤，已经请求了第一页算页码数，不设置将获取不到第一页得数据
+                    priority=2,
+                    meta={'item': item}
+                )
         else:
             logger.debug('该地区没有数据')
             return
-        # 翻页
-        for page in range(1, counts):
-            handle_list = [
-                {"name": "sEcho", "value": page},
-                {"name": "iColumns", "value": 6},
-                {"name": "sColumns", "value": ",,,,,"},
-                {"name": "iDisplayStart", "value": 15 * (page - 1)},
-                {"name": "iDisplayLength", "value": 15},
-                {"name": "mDataProp_0", "value": "null"},
-                {"name": "mDataProp_1", "value": "null"},
-                {"name": "mDataProp_2", "value": "null"},
-                {"name": "mDataProp_3", "value": "null"},
-                {"name": "mDataProp_4", "value": "null"},
-                {"name": "mDataProp_5", "value": "null"}
-            ]
-            form_data['_noticelist_WAR_rmfynoticeListportlet_aoData'] = str(handle_list)
-            yield scrapy.FormRequest(
-                url=self.list_url,
-                formdata=form_data,
-                callback=self.parse_index,
-                dont_filter=True,  # 不过滤，已经请求了第一页算页码数，不设置将获取不到第一页得数据
-                priority=2,
-                meta={'item': item}
-            )
 
     def parse_index(self, response):
         """
