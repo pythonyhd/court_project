@@ -90,7 +90,6 @@ class RmfyCourtSpider(scrapy.Spider):
                     formdata=form_data,
                     callback=self.get_page_counts,
                     meta={'form_data': form_data, 'item': meta_data},
-                    priority=1,
                 )
 
     def get_page_counts(self, response):
@@ -126,7 +125,7 @@ class RmfyCourtSpider(scrapy.Spider):
                     formdata=form_data,
                     callback=self.parse_index,
                     dont_filter=True,  # 不过滤，已经请求了第一页算页码数，不设置将获取不到第一页得数据
-                    priority=2,
+                    priority=3,
                     meta={'item': item}
                 )
         else:
@@ -159,7 +158,8 @@ class RmfyCourtSpider(scrapy.Spider):
                     formdata=form_data,
                     method='POST',
                     callback=self.parse_detail,
-                    meta={'item': data}
+                    meta={'item': data},
+                    priority=5
                 )
         else:
             logger.debug('该条件没有数据')
