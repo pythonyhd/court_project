@@ -121,7 +121,7 @@ class MysqlTwistedPipeline(object):
                 DropItem(item)
             else:
                 logger.debug('插入失败,errormsg:{}'.format(repr(e)))
-                self.redis_client.sadd("wechat:insert_err_items", json.dumps(dict(item), ensure_ascii=False))
+                self.redis_client.sadd("court:insert_err_items", json.dumps(dict(item), ensure_ascii=False))
 
     def handle_error(self, failure, item, spider):
         logger.error("插入失败原因:{}".format(failure))

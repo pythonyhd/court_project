@@ -2,7 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="babfcb02-32fb-4dd7-add0-f172c032b402" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/rmfygg/spiders/court.py" beforeDir="false" afterPath="$PROJECT_DIR$/rmfygg/spiders/court.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rmfygg/pipelines.py" beforeDir="false" afterPath="$PROJECT_DIR$/rmfygg/pipelines.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rmfygg/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/rmfygg/settings.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -189,7 +191,7 @@
       <workItem from="1569745097187" duration="112217000" />
       <workItem from="1571197398150" duration="10177000" />
       <workItem from="1571884134119" duration="296000" />
-      <workItem from="1572338160165" duration="410000" />
+      <workItem from="1572338160165" duration="758000" />
     </task>
     <servers />
   </component>
@@ -214,7 +216,7 @@
     <SUITE FILE_PATH="coverage/rmfygg$love2.coverage" NAME="love2 Coverage Results" MODIFIED="1569749164441" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/rmfygg$handle_mysql_db.coverage" NAME="handle_mysql_db Coverage Results" MODIFIED="1570613411094" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/work_utils" />
     <SUITE FILE_PATH="coverage/rmfygg$test.coverage" NAME="test Coverage Results" MODIFIED="1569747586720" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/rmfygg$main.coverage" NAME="main Coverage Results" MODIFIED="1571206242883" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/rmfygg$main.coverage" NAME="main Coverage Results" MODIFIED="1572338711561" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/rmfygg$new_test.coverage" NAME="new_test Coverage Results" MODIFIED="1571109122586" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

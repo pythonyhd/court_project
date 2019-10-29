@@ -18,7 +18,7 @@ DOWNLOAD_TIMEOUT = 20  # 下载超时时间默认180
 # COOKIES_ENABLED = True
 LOG_LEVEL = 'INFO'
 RANDOM_UA_TYPE = 'random'
-SPIDER_ERRROR_URLS = 'rmfygg:crawl_error_urls'
+SPIDER_ERRROR_URLS = 'court:crawl_error_urls'
 # COMPRESSION_ENABLED = False
 # 调度去重等等
 SCHEDULER = "scrapy_redis.scheduler.Scheduler"
