@@ -90,6 +90,7 @@ class RmfyCourtSpider(scrapy.Spider):
                     formdata=form_data,
                     callback=self.get_page_counts,
                     meta={'form_data': form_data, 'item': meta_data},
+                    dont_filter=True,
                 )
 
     def get_page_counts(self, response):
@@ -105,7 +106,7 @@ class RmfyCourtSpider(scrapy.Spider):
         if page_count:
             counts = int(int(page_count[0]) / 15) + 2
             # 翻页
-            for page in range(1, counts):
+            for page in range(2, counts):
                 handle_list = [
                     {"name": "sEcho", "value": page},
                     {"name": "iColumns", "value": 6},
@@ -124,7 +125,7 @@ class RmfyCourtSpider(scrapy.Spider):
                     url=self.list_url,
                     formdata=form_data,
                     callback=self.parse_index,
-                    dont_filter=True,  # 不过滤，已经请求了第一页算页码数，不设置将获取不到第一页得数据
+                    # dont_filter=True,  # 不过滤，已经请求了第一页算页码数，不设置将获取不到第一页得数据
                     priority=3,
                     meta={'item': item}
                 )
