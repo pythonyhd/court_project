@@ -131,7 +131,6 @@ class RmfyCourtSpider(scrapy.Spider):
                 )
         else:
             logger.debug('该地区没有数据')
-            return
 
     def parse_index(self, response):
         """
