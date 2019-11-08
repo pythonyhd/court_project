@@ -4,7 +4,7 @@ import redis
 import json
 import time
 import math
-from work_utils.court_filter import filter_factory
+from rmfygg.work_utils.court_filter import filter_factory
 from scrapy.exceptions import DropItem
 import pymysql
 from twisted.enterprise import adbapi
@@ -18,7 +18,7 @@ class RmfyggPipeline(object):
     数据简单清洗
     """
     def __deal_with_data(self, txt):
-        data = re.sub(r'[\r\n\t\s&ensp;</br></br>]', '', txt)
+        data = re.sub(r'\r|\n|\t|\s|&ensp;|</br>', '', txt)
         return data
 
     @classmethod
