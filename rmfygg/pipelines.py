@@ -1,15 +1,18 @@
 # -*- coding: utf-8 -*-
 import re
-import redis
 import json
 import time
 import math
-from rmfygg.work_utils.court_filter import filter_factory
+
+import redis
 from scrapy.exceptions import DropItem
 import pymysql
 from twisted.enterprise import adbapi
-from rmfygg import settings
 import logging
+
+from rmfygg.work_utils.court_filter import filter_factory
+from rmfygg import settings
+
 logger = logging.getLogger(__name__)
 
 

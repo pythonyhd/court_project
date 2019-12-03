@@ -21,7 +21,33 @@ class RmfyCourtSpider(scrapy.Spider):
             "x-requested-with": "XMLHttpRequest",
             "origin": "https://rmfygg.court.gov.cn",
             "referer": "https://rmfygg.court.gov.cn/web/rmfyportal/noticeinfo",
-        }
+        },
+        "DOWNLOADER_MIDDLEWARES": {
+            'rmfygg.middlewares.RandomUserAgentMiddleware': 150,
+            'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware': None,  # 禁用默认的代理
+            'rmfygg.middlewares.MyfreeProxyMiddleware': 180,
+            'scrapy.downloadermiddlewares.retry.RetryMiddleware': None,
+            'rmfygg.middlewares.LocalRetryMiddlerware': 280,
+        },
+        "ITEM_PIPELINES": {
+            'rmfygg.pipelines.RmfyggPipeline': 350,
+            'rmfygg.pipelines.MysqlTwistedPipeline': 400,
+            # 'rmfygg.pipelines.RedisPipeline': 400,
+        },
+        "SCHEDULER": "scrapy_redis.scheduler.Scheduler",
+        "DUPEFILTER_CLASS": "scrapy_redis.dupefilter.RFPDupeFilter",
+        "SCHEDULER_QUEUE_CLASS": "scrapy_redis.queue.SpiderPriorityQueue",
+        "SCHEDULER_PERSIST": True,
+        # "REACTOR_THREADPOOL_MAXSIZE": '20',  # 增加处理DNS查询的线程数
+        "REDIRECT_ENABLED": False,
+        'COOKIES_ENABLED': False,
+        "RETRY_ENABLED": True,
+        "RETRY_TIMES": '9',
+        "DOWNLOAD_TIMEOUT": '30',
+        "CONCURRENT_REQUESTS": '20',  # 并发请求(concurrent requests)的最大值，默认16
+        "CONCURRENT_ITEMS": '80',  # 同时处理(每个response的)item的最大值，默认100
+        "CONCURRENT_REQUESTS_PER_DOMAIN": '5',  # 对单个网站进行并发请求的最大值，默认8
+        "DOWNLOAD_DELAY": '0.1',
     }
     list_url = 'https://rmfygg.court.gov.cn/web/rmfyportal/noticeinfo?p_p_id=noticelist_WAR_rmfynoticeListportlet&p_p_lifecycle=2&p_p_state=normal&p_p_mode=view&p_p_resource_id=initNoticeList&p_p_cacheability=cacheLevelPage&p_p_col_id=column-1&p_p_col_count=1'
     index_url = 'https://rmfygg.court.gov.cn/web/rmfyportal/noticedetail?p_p_id=noticedetail_WAR_rmfynoticeDetailportlet&p_p_lifecycle=2&p_p_state=normal&p_p_mode=view&p_p_resource_id=noticeDetail&p_p_cacheability=cacheLevelPage&p_p_col_id=column-1&p_p_col_count=1'

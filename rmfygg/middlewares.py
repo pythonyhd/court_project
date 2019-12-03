@@ -1,14 +1,12 @@
 # -*- coding: utf-8 -*-
-from fake_useragent import UserAgent
 import redis
-import random
-import base64
+from fake_useragent import UserAgent
 from scrapy.downloadermiddlewares.retry import RetryMiddleware
-from scrapy.exceptions import IgnoreRequest
 from scrapy.utils.python import global_object_name
 from scrapy.utils.response import response_status_message
-from rmfygg import settings
 import logging
+
+from rmfygg import settings
 logger = logging.getLogger(__name__)
 
 
@@ -63,12 +61,12 @@ class MyfreeProxyMiddleware(object):
         # free_proxies = self.redis.zrevrange('freeproxies', 0, 100)
         ip_port = self.redis.srandmember('proxies')
         # proxies = {
-        #     'http:': 'http://{}'.format(random.choice(free_proxies).decode('utf-8')),
-        #     'https:': 'https://{}'.format(random.choice(free_proxies).decode('utf-8')),
+        #     'http': 'http://{}'.format(random.choice(free_proxies).decode('utf-8')),
+        #     'https': 'https://{}'.format(random.choice(free_proxies).decode('utf-8')),
         # }
         proxies = {
-            'http:': 'http://{}'.format(ip_port.decode('utf-8')),
-            'https:': 'https://{}'.format(ip_port.decode('utf-8')),
+            'http': 'http://{}'.format(ip_port.decode('utf-8')),
+            'https': 'https://{}'.format(ip_port.decode('utf-8')),
         }
         if request.url.startswith('http://'):
             request.meta['proxy'] = proxies.get("http:")
@@ -76,60 +74,6 @@ class MyfreeProxyMiddleware(object):
         else:
             request.meta['proxy'] = proxies.get('https:')
             logger.debug('https链接,ip:{}'.format(request.meta.get('proxy')))
-
-    def process_response(self, request, response, spider):
-        if response.status in [300, 301, 302]:
-            try:
-                redirect_url = response.headers.get('location')
-                logger.error('出现重定向，需要处理，url:{}'.format(redirect_url))
-                if 'login' in redirect_url:
-                    logger.info('需要登录')
-                return request
-            except:
-                raise IgnoreRequest
-
-        elif response.status in [414, 500, 503, 533, 564, 562]:
-            return request
-
-        elif response.status == 403:
-            proxy_spider = request.meta.get('proxy')
-            proxy_redis = proxy_spider.split("//")[1]
-            self.delete_proxy(proxy_redis)
-            return request
-
-        else:
-            return response
-
-    def process_exception(self, request, exception, spider):
-        # print(repr(exception))
-        if 'ConnectionRefusedError' in repr(exception):
-            proxy = request.meta.get('proxy')
-            if proxy:
-                proxy = proxy.split("//")[1]
-                # self.delete_free_proxy(proxy)
-                self.delete_proxy(proxy)
-                logger.info('目标计算机积极拒绝，删除代理-{}-请求url-{}-重新请求'.format(proxy, request.url))
-                return request
-            else:
-                logger.info('无代理')
-
-        elif 'TCPTimedOutError' in repr(exception):
-            proxy = request.meta.get('proxy')
-            if proxy:
-                proxy = proxy.split("//")[1]
-                # self.delete_free_proxy(proxy)
-                self.delete_proxy(proxy)
-                logger.info('连接方在一段时间后没有正确答复或连接的主机没有反应，删除代理-{}-请求url-{}-重新请求'.format(proxy, request.url))
-                return request
-            else:
-                logger.info('无代理')
-
-        elif 'TimeoutError' in repr(exception):
-            logger.info('请求超时-请求url-{}-重新请求'.format(request.url))
-            return request
-
-        else:
-            logger.error('出现其他异常:{}--等待处理'.format(repr(exception)))
 
 
 class LocalRetryMiddlerware(RetryMiddleware):
@@ -142,6 +86,19 @@ class LocalRetryMiddlerware(RetryMiddleware):
         password=settings.REDIS_PASSWORD,
         db=settings.REDIS_DB,
     )
+
+    redis_proxy = redis.StrictRedis(
+        host=settings.REDIS_PROXIES_HOST,
+        port=settings.REDIS_PROXIES_PORT,
+        password=settings.REDIS_PROXIES_PASSWORD,
+        db=settings.REDIS_PROXIES_DB,
+    )
+
+    def delete_proxy(self, proxy):
+        """
+        删除代理，公司拨号代理是set
+        """
+        self.redis_proxy.srem("proxies", proxy)
 
     def process_response(self, request, response, spider):
 
@@ -178,10 +135,39 @@ class LocalRetryMiddlerware(RetryMiddleware):
             return retryreq
         else:
             # 全部重试错误，要保存错误的url和参数 - start
-            error_request = settings.SPIDER_ERRROR_URLS
+            error_request = spider.name + 'error_urls'
             self.redis_client.sadd(error_request, request.url)
             # 全部重试错误，要保存错误的url和参数 - en
             stats.inc_value('retry/max_reached')
             logger.debug("Gave up retrying %(request)s (failed %(retries)d times): %(reason)s",
                          {'request': request, 'retries': retries, 'reason': reason},
                          extra={'spider': spider})
+
+    def process_exception(self, request, exception, spider):
+        if "ConnectionRefusedError" in repr(exception):
+            proxy_spider = request.meta.get('proxy')
+            proxy_redis = proxy_spider.split("//")[1]
+            self.delete_proxy(proxy_redis)
+            logger.info('目标计算机积极拒绝，删除代理-{}-请求url-{}-重新请求'.format(proxy_redis, request.url))
+            return request
+
+        elif "TCPTimedOutError" in repr(exception):
+            logger.debug('连接方在一段时间后没有正确答复或连接的主机没有反应')
+            return request
+
+        elif "ConnectionError" in repr(exception):
+            logger.debug("连接出错，无网络")
+            return request
+
+        elif "TimeoutError" in repr(exception):
+            logger.debug('请求超时-请求url-{}-重新请求'.format(request.url))
+            return request
+
+        elif "ConnectionResetError" in repr(exception):
+            logger.debug('远程主机强迫关闭了一个现有的连接')
+            return request
+
+        elif "ResponseNeverReceived" in repr(exception):
+            return request
+        else:
+            logger.error('出现其他异常:{}--等待处理'.format(repr(exception)))
