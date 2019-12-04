@@ -72,31 +72,31 @@ class RmfyCourtUpdateSpider(scrapy.Spider):
             ]
             for keyword in self.keywords:
                 if keyword == '开庭传票':
-                    sj_type = 75
+                    sj_type = '75'
                     site_id = 29035
                     xxly = '人民法院公告网-开庭传票'
                 elif keyword == '裁判文书':
-                    sj_type = 74
+                    sj_type = '74'
                     site_id = 29206
                     xxly = '人民法院公告网-裁判文书'
                 elif keyword == '执行文书':
-                    sj_type = 76
+                    sj_type = '76'
                     site_id = 29236
                     xxly = '人民法院公告网-执行公告'
                 elif keyword == '仲裁文书':
-                    sj_type = 20
+                    sj_type = '20'
                     site_id = 29583
                     xxly = '人民法院公告网-仲裁文书'
                 elif keyword == '拍卖公告':
-                    sj_type = 17
+                    sj_type = '17'
                     site_id = 29568
                     xxly = '人民法院公告网-拍卖公告'
                 elif keyword == '行政处罚决定书':
-                    sj_type = 54
+                    sj_type = '54'
                     site_id = 29651
                     xxly = '人民法院公告网-行政处罚通知书'
                 else:
-                    sj_type = 77
+                    sj_type = '77'
                     site_id = 29614
                     xxly = '人民法院公告网-其他公告'
                 meta_data = {'sj_type': sj_type, 'site_id': site_id, 'xxly': xxly}
@@ -165,7 +165,7 @@ class RmfyCourtUpdateSpider(scrapy.Spider):
         sf = results.get('province')  # 省份
         cf_cfmc = results.get('tosendPeople')  # 当事人
         ws_nr_txt = results.get('noticeContent')
-        if sj_type == 17:
+        if sj_type == '17':
             cf_xzjg = self.get_cf_xzjg(ws_nr_txt)
         else:
             cf_xzjg = results.get('court')  # 处罚机关，法院名
