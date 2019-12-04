@@ -7,6 +7,7 @@ from scrapy.utils.response import response_status_message
 import logging
 
 from rmfygg import settings
+
 logger = logging.getLogger(__name__)
 
 
@@ -69,10 +70,10 @@ class MyfreeProxyMiddleware(object):
             'https': 'https://{}'.format(ip_port.decode('utf-8')),
         }
         if request.url.startswith('http://'):
-            request.meta['proxy'] = proxies.get("http:")
+            request.meta['proxy'] = proxies.get("http")
             logger.debug('http链接,ip:{}'.format(request.meta.get('proxy')))
         else:
-            request.meta['proxy'] = proxies.get('https:')
+            request.meta['proxy'] = proxies.get('https')
             logger.debug('https链接,ip:{}'.format(request.meta.get('proxy')))
 
 
@@ -105,6 +106,9 @@ class LocalRetryMiddlerware(RetryMiddleware):
         if request.meta.get('dont_retry', False):
             return response
         if response.status in self.retry_http_codes:
+            reason = response_status_message(response.status)
+            return self._retry(request, reason, spider) or response
+        if response.status in [302, 301, 414, 500, 503]:
             reason = response_status_message(response.status)
             return self._retry(request, reason, spider) or response
         return response

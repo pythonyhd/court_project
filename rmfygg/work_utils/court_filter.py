@@ -45,7 +45,7 @@ def cf_74_filter(item):
     """
     if isinstance(item, dict):
         xq_url = item.get('xq_url')
-        sj_type = item.get('sj_type', 74)
+        sj_type = item.get('sj_type', '74')
         cf_xzjg = item.get('cf_xzjg')
         oname = item.get('oname')
         if xq_url:
@@ -56,6 +56,7 @@ def cf_74_filter(item):
                         return get_md5_value(_str)
                     else:
                         _str = xq_url + cf_xzjg + oname
+                        return get_md5_value(_str)
                 else:
                     _str = xq_url + cf_xzjg
                     return get_md5_value(_str)
@@ -76,7 +77,7 @@ def cf_75_filter(item):
     """
     if isinstance(item, dict):
         xq_url = item.get('xq_url')
-        sj_type = item.get('sj_type', 75)
+        sj_type = item.get('sj_type', '75')
         cf_xzjg = item.get('cf_xzjg')
         oname = item.get('oname')
         if xq_url:
@@ -87,6 +88,7 @@ def cf_75_filter(item):
                         return get_md5_value(_str)
                     else:
                         _str = xq_url + cf_xzjg + oname
+                        return get_md5_value(_str)
                 else:
                     _str = xq_url + cf_xzjg
                     return get_md5_value(_str)
@@ -107,7 +109,7 @@ def cf_76_filter(item):
     """
     if isinstance(item, dict):
         xq_url = item.get('xq_url')
-        sj_type = item.get('sj_type', 76)
+        sj_type = item.get('sj_type', '76')
         cf_xzjg = item.get('cf_xzjg')
         oname = item.get('oname')
         if xq_url:
@@ -118,6 +120,7 @@ def cf_76_filter(item):
                         return get_md5_value(_str)
                     else:
                         _str = xq_url + cf_xzjg + oname
+                        return get_md5_value(_str)
                 else:
                     _str = xq_url + cf_xzjg
                     return get_md5_value(_str)
@@ -138,7 +141,7 @@ def cf_77_filter(item):
     """
     if isinstance(item, dict):
         xq_url = item.get('xq_url')
-        sj_type = item.get('sj_type', 77)
+        sj_type = item.get('sj_type', '77')
         cf_xzjg = item.get('cf_xzjg')
         oname = item.get('oname')
         if xq_url:
@@ -149,6 +152,7 @@ def cf_77_filter(item):
                         return get_md5_value(_str)
                     else:
                         _str = xq_url + cf_xzjg + oname
+                        return get_md5_value(_str)
                 else:
                     _str = xq_url + cf_xzjg
                     return get_md5_value(_str)
@@ -169,7 +173,7 @@ def cf_17_filter(item):
     """
     if isinstance(item, dict):
         xq_url = item.get('xq_url')
-        sj_type = item.get('sj_type', 17)
+        sj_type = item.get('sj_type', '17')
         cf_xzjg = item.get('cf_xzjg')
         oname = item.get('oname')
         if xq_url:
@@ -180,6 +184,7 @@ def cf_17_filter(item):
                         return get_md5_value(_str)
                     else:
                         _str = xq_url + cf_xzjg + oname
+                        return get_md5_value(_str)
                 else:
                     _str = xq_url + cf_xzjg
                     return get_md5_value(_str)
@@ -200,7 +205,7 @@ def cf_20_filter(item):
     """
     if isinstance(item, dict):
         xq_url = item.get('xq_url')
-        sj_type = item.get('sj_type', 20)
+        sj_type = item.get('sj_type', '20')
         cf_xzjg = item.get('cf_xzjg')
         oname = item.get('oname')
         if xq_url:
@@ -211,6 +216,7 @@ def cf_20_filter(item):
                         return get_md5_value(_str)
                     else:
                         _str = xq_url + cf_xzjg + oname
+                        return get_md5_value(_str)
                 else:
                     _str = xq_url + cf_xzjg
                     return get_md5_value(_str)
@@ -231,7 +237,7 @@ def cf_54_filter(item):
     """
     if isinstance(item, dict):
         xq_url = item.get('xq_url')
-        sj_type = item.get('sj_type', 20)
+        sj_type = item.get('sj_type', '54')
         cf_xzjg = item.get('cf_xzjg')
         oname = item.get('oname')
         if xq_url:
@@ -242,6 +248,7 @@ def cf_54_filter(item):
                         return get_md5_value(_str)
                     else:
                         _str = xq_url + cf_xzjg + oname
+                        return get_md5_value(_str)
                 else:
                     _str = xq_url + cf_xzjg
                     return get_md5_value(_str)
@@ -256,17 +263,17 @@ def cf_54_filter(item):
 
 def filter_factory(item):
     sj_type = item.get('sj_type')
-    if sj_type == 74:
+    if sj_type == '74':
         return cf_74_filter(item)
-    elif sj_type == 75:
+    if sj_type == '75':
         return cf_75_filter(item)
-    elif sj_type == 76:
+    if sj_type == '76':
         return cf_76_filter(item)
-    elif sj_type == 77:
+    if sj_type == '77':
         return cf_77_filter(item)
-    elif sj_type == 17:
+    if sj_type == '17':
         return cf_17_filter(item)
-    elif sj_type == 20:
+    if sj_type == '20':
         return cf_20_filter(item)
-    elif sj_type == 54:
+    if sj_type == '54':
         return cf_54_filter(item)

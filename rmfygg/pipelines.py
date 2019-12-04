@@ -10,8 +10,9 @@ import pymysql
 from twisted.enterprise import adbapi
 import logging
 
-from rmfygg.work_utils.court_filter import filter_factory
 from rmfygg import settings
+from rmfygg.utils.elastic_common import EsObject
+from rmfygg.work_utils.court_filter import filter_factory
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +22,7 @@ class RmfyggPipeline(object):
     数据简单清洗
     """
     def __deal_with_data(self, txt):
-        data = re.sub(r'\r|\n|\t|\s|&ensp;|</br>', '', txt)
+        data = re.sub(r'[\r\n\t\s&ensp;</br></br>]', '', txt)
         return data
 
     @classmethod
@@ -128,6 +129,23 @@ class MysqlTwistedPipeline(object):
 
     def handle_error(self, failure, item, spider):
         logger.error("插入失败原因:{}".format(failure))
+
+
+class Save2eEsPipeline(object):
+    def __init__(self):
+        self.es = EsObject(index_name=settings.INDEX_NAME, index_type=settings.INDEX_TYPE, host=settings.ES_HOST, port=settings.ES_PORT)
+
+    def process_item(self, item, spider):
+        if item:
+            # 获取唯一ID
+            _id = item['ws_pc_id']
+            res1 = self.es.get_data_by_id(_id)
+            if res1.get('found') == True:
+                logger.debug("该数据已存在%s" % _id)
+            else:
+                self.es.insert_data(dict(item), _id)
+                logger.debug("----------抓取成功,开始插入数据%s" % _id)
+                return item
 
 
 class RedisPipeline(object):
