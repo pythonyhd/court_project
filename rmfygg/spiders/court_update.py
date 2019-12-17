@@ -165,8 +165,8 @@ class RmfyCourtUpdateSpider(scrapy.Spider):
         sf = results.get('province')  # 省份
         cf_cfmc = results.get('tosendPeople')  # 当事人
         ws_nr_txt = results.get('noticeContent')
-        if sj_type == '17':
-            cf_xzjg = self.get_cf_xzjg(ws_nr_txt)
+        if sj_type == '20' or sj_type == '54':
+            cf_xzjg = self.get_real_cf_xzjg(ws_nr_txt)
         else:
             cf_xzjg = results.get('court')  # 处罚机关，法院名
         index_item = dict(cf_xzjg=cf_xzjg, bz=bz, cf_jdrq=cf_jdrq, sf=sf, cf_cfmc=cf_cfmc, cf_jg=ws_nr_txt, ws_nr_txt=ws_nr_txt)
@@ -175,14 +175,20 @@ class RmfyCourtUpdateSpider(scrapy.Spider):
         yield item
 
     @classmethod
-    def get_cf_xzjg(cls, txt):
+    def get_real_cf_xzjg(cls, txt):
         """
-        提取处罚机关，根据处罚机关进行数据分类
-        :param txt:
-        :return:
+        仲裁文书跟行政处罚类型，处罚机关匹配规则
         """
-        data = re.search(r'(落款单位：|特此公告。|视为你放弃听证的权利。|特此公告)(.*)', txt)
-        if data:
-            return data.group(2)
+        if txt:
+            while True:
+                data = re.findall(r'[。）： ](.*?(?:部|厅|局|会|院|政府|队|处|处罚中心|中国南方电网有限责任公司|互联网金融平台))', txt)
+                if data:
+                    data = data[-1]
+                else:
+                    data = ''
+                if "。" in data or "）" in data or "：" in data or ' ' in data:
+                    txt = data
+                else:
+                    return data
         else:
             return ''

@@ -27,15 +27,16 @@ class RmfyggPipeline(object):
 
     @classmethod
     def _get_cf_wsh(cls, txt):
+        """
+        文书号匹配规则
+        """
         if txt:
-            data = re.search(r'(公告送达|依法作出|执行本院|未履行已发生法律效力的|案号为)(.*?(?:民初|清申|强清|执|第|民终).*?号)', txt)
+            data = re.search(r'([\[\(（]\d{4}.*?号)', txt)
             if data:
-                return data.group(2)
-            data = re.search(r'(合同纠纷一案)(.*?\d+号)', txt)
-            if data:
-                return data.group(2)
+                data = data.group()
             else:
-                return ''
+                data = ''
+            return data
         else:
             return ''
 
