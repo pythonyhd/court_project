@@ -7,6 +7,7 @@ from urllib.parse import urljoin
 
 import scrapy
 
+from rmfygg.config import china_court_settings
 from rmfygg.utils.tests import keyword_generator
 
 
@@ -14,51 +15,13 @@ class ChinaCourtSpider(scrapy.Spider):
     name = 'china_court_spider'
     allowed_domains = ['chinacourt.org']
     search_url = 'https://www.chinacourt.org/announcement/ggsdsearch'
-    custom_settings = {
-        'DEFAULT_REQUEST_HEADERS': {
-            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3",
-            "Accept-Encoding": "gzip, deflate, br",
-            "Accept-Language": "zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7",
-            "DNT": "1",
-            "Host": "www.chinacourt.org",
-            "Pragma": "no-cache",
-            "Sec-Fetch-Mode": "navigate",
-            "Sec-Fetch-Site": "same-origin",
-            "Sec-Fetch-User": "?1",
-            "Upgrade-Insecure-Requests": "1",
-        },
-        "DOWNLOADER_MIDDLEWARES": {
-            'rmfygg.middlewares.RandomUserAgentMiddleware': 120,
-            'rmfygg.middlewares.MyfreeProxyMiddleware': 150,
-            'rmfygg.middlewares.LocalRetryMiddlerware': 180,
-        },
-        "ITEM_PIPELINES": {
-            'rmfygg.pipelines.RmfyggPipeline': 300,
-            'rmfygg.pipelines.Save2eEsPipeline': 340,
-            # 'rmfygg.pipelines.MysqlTwistedPipeline': 380,
-        },
-        "SCHEDULER": "scrapy_redis.scheduler.Scheduler",
-        "DUPEFILTER_CLASS": "scrapy_redis.dupefilter.RFPDupeFilter",
-        "SCHEDULER_QUEUE_CLASS": "scrapy_redis.queue.SpiderPriorityQueue",
-        "SCHEDULER_PERSIST": True,
-        "REDIRECT_ENABLED": False,
-        "RETRY_ENABLED": True,
-        "RETRY_TIMES": '9',
-        "DOWNLOAD_TIMEOUT": '30',
-        # "CONCURRENT_REQUESTS": '16',  # 并发请求(concurrent requests)的最大值，默认16
-        # "CONCURRENT_ITEMS": '80',  # 同时处理(每个response的)item的最大值，默认100
-        # "CONCURRENT_REQUESTS_PER_DOMAIN": '5',  # 对单个网站进行并发请求的最大值，默认8
-        # "DOWNLOAD_DELAY": '0.1',
-    }
+    custom_settings = china_court_settings
     base_item = {
         'xxly': '中国法院网-数据补充',
     }
 
     def start_requests(self):
-        """
-        搜索入口函数
-        :return:
-        """
+        """ 搜索入口函数 """
         item = dict()
         results = keyword_generator()
         for kind_id in results:
@@ -264,5 +227,4 @@ class ChinaCourtSpider(scrapy.Spider):
         item['ws_nr_txt'] = ws_nr_txt
         item['cf_jg'] = ws_nr_txt
         court_item = {**item, **self.base_item}
-        # print(court_item)
         yield court_item

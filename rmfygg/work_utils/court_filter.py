@@ -1,7 +1,4 @@
 # -*- coding: utf-8 -*-
-# @Time    : 2019/10/8 11:53
-# @Author  : Yasaka.Yu
-# @File    : court_filter.py
 import re
 import hashlib
 
@@ -38,11 +35,7 @@ def __deal_with_other(_str):
 
 
 def cf_74_filter(item):
-    """
-    裁判文书排重
-    :param item:
-    :return:
-    """
+    """ 裁判文书排重 """
     if isinstance(item, dict):
         xq_url = item.get('xq_url')
         sj_type = item.get('sj_type', '74')
@@ -70,11 +63,7 @@ def cf_74_filter(item):
 
 
 def cf_75_filter(item):
-    """
-    开庭公告排重
-    :param item:
-    :return:
-    """
+    """ 开庭公告排重 """
     if isinstance(item, dict):
         xq_url = item.get('xq_url')
         sj_type = item.get('sj_type', '75')
@@ -102,11 +91,7 @@ def cf_75_filter(item):
 
 
 def cf_76_filter(item):
-    """
-    执行公告排重
-    :param item:
-    :return:
-    """
+    """ 执行公告排重 """
     if isinstance(item, dict):
         xq_url = item.get('xq_url')
         sj_type = item.get('sj_type', '76')
@@ -134,11 +119,7 @@ def cf_76_filter(item):
 
 
 def cf_77_filter(item):
-    """
-    其他公告排重
-    :param item:
-    :return:
-    """
+    """ 其他公告排重 """
     if isinstance(item, dict):
         xq_url = item.get('xq_url')
         sj_type = item.get('sj_type', '77')
@@ -166,11 +147,7 @@ def cf_77_filter(item):
 
 
 def cf_17_filter(item):
-    """
-    其他公告排重
-    :param item:
-    :return:
-    """
+    """ 拍卖公告排重 """
     if isinstance(item, dict):
         xq_url = item.get('xq_url')
         sj_type = item.get('sj_type', '17')
@@ -198,11 +175,7 @@ def cf_17_filter(item):
 
 
 def cf_20_filter(item):
-    """
-    其他公告排重
-    :param item:
-    :return:
-    """
+    """ 民商事仲裁排重 """
     if isinstance(item, dict):
         xq_url = item.get('xq_url')
         sj_type = item.get('sj_type', '20')
@@ -229,15 +202,11 @@ def cf_20_filter(item):
         return None
 
 
-def cf_54_filter(item):
-    """
-    行政处罚通知书
-    :param item:
-    :return:
-    """
+def cf_null_filter(item):
+    """ 行政处罚通知书 """
     if isinstance(item, dict):
         xq_url = item.get('xq_url')
-        sj_type = item.get('sj_type', '54')
+        sj_type = item.get('sj_type', '')
         cf_xzjg = item.get('cf_xzjg')
         oname = item.get('oname')
         if xq_url:
@@ -273,7 +242,9 @@ def filter_factory(item):
         return cf_77_filter(item)
     if sj_type == '17':
         return cf_17_filter(item)
+    if sj_type == '19':
+        return cf_20_filter(item)
     if sj_type == '20':
         return cf_20_filter(item)
-    if sj_type == '54':
-        return cf_54_filter(item)
+    if sj_type == '':
+        return cf_null_filter(item)

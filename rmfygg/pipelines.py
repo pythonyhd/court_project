@@ -4,6 +4,7 @@ import json
 import time
 import math
 
+import pymongo
 import redis
 from scrapy.exceptions import DropItem
 import pymysql
@@ -18,18 +19,14 @@ logger = logging.getLogger(__name__)
 
 
 class RmfyggPipeline(object):
-    """
-    数据简单清洗
-    """
+    """ 数据简单清洗 """
     def __deal_with_data(self, txt):
         data = re.sub(r'[\r\n\t\s&ensp;</br></br>]', '', txt)
         return data
 
     @classmethod
     def _get_cf_wsh(cls, txt):
-        """
-        文书号匹配规则
-        """
+        """ 文书号匹配规则 """
         if txt:
             data = re.search(r'([\[\(（]\d{4}.*?号)', txt)
             if data:
@@ -46,21 +43,15 @@ class RmfyggPipeline(object):
             data = re.search(r'(原告|原告为|上诉人|执行人)(.*?)(诉|与|申请宣告)', txt)
             if data:
                 return data.group(2)
-            else:
-                return ''
-        else:
-            return ''
+        return ''
 
     @classmethod
     def _get_cf_sy(cls, txt):
         if txt:
-            data = re.search(r'(.*?一案)', txt)
-            if data:
-                return data.group(1)
-            else:
-                return ''
-        else:
-            return ''
+            txt = re.search(r'(.*?一案)', txt)
+            if txt:
+                return txt.group(1)
+        return ''
 
     def process_item(self, item, spider):
         item['cj_sj'] = math.ceil(time.time())
@@ -76,15 +67,11 @@ class RmfyggPipeline(object):
             item['ws_pc_id'] = ws_pc_id
         else:
             DropItem(item)
-        # print(item)
         return item
 
 
 class MysqlTwistedPipeline(object):
-    """
-    mysql异步存储
-    """
-
+    """ mysql异步存储 """
     def __init__(self, dbpool):
         self.dbpool = dbpool
         self.table_name = 'axy_data'
@@ -149,10 +136,32 @@ class Save2eEsPipeline(object):
                 return item
 
 
+class MongodbIndexPipeline(object):
+    """ 存储到mongodb数据库并且创建索引 """
+    def __init__(self, mongo_uri, mongo_db):
+        self.client = pymongo.MongoClient(mongo_uri)
+        self.db = self.client[mongo_db]
+
+    @classmethod
+    def from_crawler(cls, crawler):
+        return cls(
+            mongo_uri=crawler.settings.get('MONGO_URI'),
+            mongo_db=crawler.settings.get('MONGO_DATA_BASE')
+        )
+
+    def process_item(self, item, spider):
+        collection = self.db[spider.name]
+        collection.create_index([('oname', 1), ('spider_time', -1)])  # 1表示升序，-1降序
+        try:
+            collection.insert(dict(item))
+        except:
+            logger.debug('数据重复')
+            # raise DropItem(item)
+        return item
+
+
 class RedisPipeline(object):
-    """
-    法院名称放到服务器redis
-    """
+    """ 法院名称放到服务器redis """
     def __init__(self, redis_host, redis_port, redis_db, redis_password):
         self.pool = redis.ConnectionPool(host=redis_host, port=redis_port, db=redis_db, password=redis_password)
         self.client = redis.Redis(connection_pool=self.pool, decode_responses=True)

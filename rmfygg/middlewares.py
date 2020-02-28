@@ -12,9 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 class RandomUserAgentMiddleware(object):
-    """
-    随机请求头
-    """
+    """ 随机请求头 """
     def __init__(self, ua_type):
         self.ua_type = ua_type
         self.ua = UserAgent()
@@ -45,17 +43,11 @@ class MyfreeProxyMiddleware(object):
         )
 
     def delete_proxy(self, proxy):
-        """
-        删除代理
-        """
+        """ 删除代理 """
         self.redis.srem("proxies", proxy)
 
     def delete_free_proxy(self, proxy):
-        """
-        删除免费代理
-        :param proxy:
-        :return:
-        """
+        """ 删除免费代理 """
         self.redis.zrem('freeproxies', proxy)
 
     def process_request(self, request, spider):
@@ -78,9 +70,7 @@ class MyfreeProxyMiddleware(object):
 
 
 class LocalRetryMiddlerware(RetryMiddleware):
-    """
-    重新定义重试中间件
-    """
+    """ 重新定义重试中间件 """
     redis_client = redis.StrictRedis(
         host=settings.REDIS_HOST,
         port=settings.REDIS_PORT,
@@ -96,9 +86,7 @@ class LocalRetryMiddlerware(RetryMiddleware):
     )
 
     def delete_proxy(self, proxy):
-        """
-        删除代理，公司拨号代理是set
-        """
+        """ 删除代理，公司拨号代理是set """
         self.redis_proxy.srem("proxies", proxy)
 
     def process_response(self, request, response, spider):
