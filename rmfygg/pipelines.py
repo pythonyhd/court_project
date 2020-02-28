@@ -28,7 +28,7 @@ class RmfyggPipeline(object):
     def _get_cf_wsh(cls, txt):
         """ 文书号匹配规则 """
         if txt:
-            data = re.search(r'([\[\(（]\d{4}.*?号)', txt)
+            data = re.search(r'((\[|\(（)\d{4}.*?\d+号)', txt)
             if data:
                 data = data.group()
             else:
